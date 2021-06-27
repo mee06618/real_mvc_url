@@ -5,16 +5,16 @@ import com.jhs.mysqliutil.MysqlUtil;
 
 public class App {
 	public static boolean isDevMode() {
-		// 이 부분을 false로 바꾸면 production 모드 이다.
+		// �씠 遺�遺꾩쓣 false濡� 諛붽씀硫� production 紐⑤뱶 �씠�떎.
 		return true;
 	}
 	
 	public static void init() {
-		// DB 세팅
-		MysqlUtil.setDBInfo("localhost", "sbsst", "sbs123414", "jsp_board");
+		// DB �꽭�똿
+		MysqlUtil.setDBInfo("localhost", "sbsst", "sbs123414", "search");
 		MysqlUtil.setDevMode(isDevMode());
 		
-		// 공용 객체 세팅
+		// 怨듭슜 媛앹껜 �꽭�똿
 		Container.init();
 	}
 }

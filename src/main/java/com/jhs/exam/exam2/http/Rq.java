@@ -27,19 +27,25 @@ public class Rq {
 	private String controllerName;
 	@Getter
 	private String actionMethodName;
-	
+
 	@Getter
 	@Setter
 	private boolean isLogined = false;
-	
+
 	@Getter
 	@Setter
 	private int loginedMemberId = 0;
-	
+
 	@Getter
 	@Setter
 	private Member loginedMember = null;
-	
+	@Getter
+	private String requestUri;
+	@Getter
+	@Setter
+	String param1="";
+	@Getter
+	String param2="";
 	public boolean isNotLogined() {
 		return isLogined == false;
 	}
@@ -61,7 +67,61 @@ public class Rq {
 		this.req = req;
 		this.resp = resp;
 
-		String requestUri = req.getRequestURI();
+		requestUri = req.getRequestURI();
+
+		if (requestUri.contains("/go/")) {
+			String[] requestUriBits = requestUri.split("/");
+
+			String contextPath = requestUriBits[1];
+			String actionTypeCode = requestUriBits[2];
+			String loginId = requestUriBits[3];
+			String goActionType = requestUriBits[4];
+	
+			if (requestUriBits.length > 5) {
+				param1 = requestUriBits[5];
+			}
+		
+		
+
+			if (requestUriBits.length > 6) {
+				param2 = requestUriBits[6];
+			}
+
+			
+
+			switch (goActionType) {
+			case "a":
+				actionMethodName = "doAdd";
+				break;
+			case "s":
+				actionMethodName = "goByShortCode";
+				break;
+			case "t":
+				actionMethodName = "goByText";
+				break;
+			}
+			
+			requestUri = Ut.f("/usr/shortUri/%s", actionMethodName);
+
+			switch (actionMethodName) {
+			case "doAdd":
+				requestUri += "?uri=" + param1;
+				break;
+			case "goByShortCode":
+				requestUri += "?code=" + param1;
+				break;
+			case "goByText":
+				if(param2==null)
+				requestUri += "?code=" + param1;
+				else {
+					requestUri += "?code=" + param1 +"&" + param2;
+				}
+				break;
+			}
+			print(Ut.f("%s", requestUri));
+			System.out.println(requestUri);
+		}
+
 		String[] requestUriBits = requestUri.split("/");
 
 		int minBitsCount = 5;
@@ -148,9 +208,7 @@ public class Rq {
 
 	public void replace(String msg, String redirectUri) {
 		println("<script>");
-		if (msg != null && msg.trim().length() > 0) {
-			printf("alert('%s');\n", msg.trim());
-		}
+		
 		printf("location.replace('%s');\n", redirectUri);
 		println("</script>");
 	}

@@ -3,64 +3,96 @@ package com.jhs.exam.exam2.repository;
 import java.util.List;
 
 import com.jhs.exam.exam2.dto.Article;
+import com.jhs.exam.exam2.dto.Site;
 import com.jhs.mysqliutil.MysqlUtil;
 import com.jhs.mysqliutil.SecSql;
 
-public class ArticleRepository {
-	public int write(String title, String body) {
+public class ArticleRepository{
+	public int convertUri(String originUri, String shortCode,String text,String blanklessText) {
 		SecSql sql = new SecSql();
-		sql.append("INSERT INTO article");
+		sql.append("INSERT INTO shortUri");
 		sql.append("SET regDate = NOW()");
 		sql.append(", updateDate = NOW()");
-		sql.append(", title = ?", title);
-		sql.append(", `body` = ?", body);
-		
+		sql.append(", memberId= 0");
+		sql.append(", originUri = ?", originUri);
+		sql.append(", shortCode = ?", shortCode);
+		sql.append(", `text` = ?", text);
+		sql.append(", `blanklessText` = ?", blanklessText);
+		sql.append(", accessCount= 0");
 		int id = MysqlUtil.insert(sql);
 		
 		return id;
 	}
-
-	public List<Article> getForPrintArticles() {
+	public int constrantCode(String shortCode) {
 		SecSql sql = new SecSql();
-		sql.append("SELECT A.*");
-		sql.append("FROM article AS A");
-		sql.append("ORDER BY id DESC");
+		sql.append("select count(*) from shortUri");
+		sql.append("where shortCode=?",shortCode);
+
 		
-		return MysqlUtil.selectRows(sql, Article.class);
+		
+		return MysqlUtil.selectRowIntValue(sql);
 	}
 
-	public Article getForPrintArticleById(int id) {
+	public String unConvertUri(String shortCode) {
 		SecSql sql = new SecSql();
-		sql.append("SELECT A.*");
-		sql.append("FROM article AS A");
-		sql.append("WHERE id = ?", id);
+		sql.append("select originUri from shortUri");
+		sql.append("where shortCode=?",shortCode);
+
 		
-		return MysqlUtil.selectRow(sql, Article.class);
+		
+		return MysqlUtil.selectRow(sql);
 	}
 
-	public int delete(int id) {
+	public int CountOriginUri(String originUri) {
 		SecSql sql = new SecSql();
-		sql.append("DELETE FROM article");
-		sql.append("WHERE id = ?", id);
+		sql.append("select count(*) from shortUri");
+		sql.append("where originUri=?",originUri);
+
 		
-		return MysqlUtil.delete(sql);
+		System.out.println(MysqlUtil.selectRowIntValue(sql));
+		return MysqlUtil.selectRowIntValue(sql);
 	}
 
-	public int modify(int id, String title, String body) {
+
+	public String GetShort(String originUri) {
 		SecSql sql = new SecSql();
-		sql.append("UPDATE article");
-		sql.append("SET updateDate = NOW()");
+		sql.append("select shortCode from shortUri");
+		sql.append("where originUri=?",originUri);
+
 		
-		if ( title != null ) {
-			sql.append(", title = ?", title);
-		}
 		
-		if ( body != null ) {
-			sql.append(", body = ?", body);
-		}
-		
-		sql.append("WHERE id = ?", id);
-		
-		return MysqlUtil.update(sql);
+		return MysqlUtil.selectRow(sql);
 	}
+			
+
+	public Site GetSiteInfo(String originUri) {
+		SecSql sql = new SecSql();
+		sql.append("select * from shortUri");
+		sql.append("where originUri=?",originUri);
+
+		
+		
+		return MysqlUtil.selectRow(sql,Site.class);
+	}
+
+	public List<Site> GetSiteList(String tag) {
+		SecSql sql = new SecSql();
+		sql.append("SELECT originUri,`text`,ShortCode,");
+		sql.append("SUM((CHAR_LENGTH(`blanklessText`)-CHAR_LENGTH(REPLACE(`blanklessText`,?,'')))) AS cnt",tag);
+		sql.append("FROM shorturi  GROUP BY id" );
+		sql.append("HAVING cnt>0 ORDER BY cnt DESC");
+	
+		
+		
+		return MysqlUtil.selectRows(sql,Site.class);
+	}
+	
+
+
+
+
+
+
+
+
 }
