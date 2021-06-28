@@ -8,7 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.jhs.exam.exam2.dto.Member;
+
 import com.jhs.exam.exam2.util.Ut;
 
 import lombok.Getter;
@@ -36,16 +36,14 @@ public class Rq {
 	@Setter
 	private int loginedMemberId = 0;
 
-	@Getter
-	@Setter
-	private Member loginedMember = null;
+
 	@Getter
 	private String requestUri;
 	@Getter
 	@Setter
 	String param1="";
 	@Getter
-	String param2="";
+	String param2;
 	public boolean isNotLogined() {
 		return isLogined == false;
 	}
@@ -70,15 +68,17 @@ public class Rq {
 		requestUri = req.getRequestURI();
 
 		if (requestUri.contains("/go/")) {
+			System.out.println(requestUri);
 			String[] requestUriBits = requestUri.split("/");
 
 			String contextPath = requestUriBits[1];
 			String actionTypeCode = requestUriBits[2];
 			String loginId = requestUriBits[3];
 			String goActionType = requestUriBits[4];
-	
+			
 			if (requestUriBits.length > 5) {
 				param1 = requestUriBits[5];
+
 			}
 		
 		
@@ -86,9 +86,7 @@ public class Rq {
 			if (requestUriBits.length > 6) {
 				param2 = requestUriBits[6];
 			}
-
-			
-
+		
 			switch (goActionType) {
 			case "a":
 				actionMethodName = "doAdd";
@@ -208,7 +206,9 @@ public class Rq {
 
 	public void replace(String msg, String redirectUri) {
 		println("<script>");
-		
+		if (msg != null && msg.trim().length() > 0) {
+			printf("alert('%s');\n", msg.trim());
+		}
 		printf("location.replace('%s');\n", redirectUri);
 		println("</script>");
 	}

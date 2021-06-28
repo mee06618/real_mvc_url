@@ -45,7 +45,7 @@ header {
     %>
             <h1>변환된 주소 : <%=request.getParameter("shortCode") %></h1>
             <%} %>
-             <form action="keyword"method="POST">
+             <form action="go/master/t"method="POST">
             		<input type="submit" value="주소모를때"></input>
             </form>
         </div>

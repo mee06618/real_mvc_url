@@ -8,6 +8,8 @@ import com.jhs.mysqliutil.MysqlUtil;
 import com.jhs.mysqliutil.SecSql;
 
 public class ArticleRepository{
+	
+
 	public int convertUri(String originUri, String shortCode,String text,String blanklessText) {
 		SecSql sql = new SecSql();
 		sql.append("INSERT INTO shortUri");
@@ -61,7 +63,7 @@ public class ArticleRepository{
 
 		
 		
-		return MysqlUtil.selectRow(sql);
+		return MysqlUtil.selectRowStringValue(sql);
 	}
 			
 
@@ -77,10 +79,10 @@ public class ArticleRepository{
 
 	public List<Site> GetSiteList(String tag) {
 		SecSql sql = new SecSql();
-		sql.append("SELECT originUri,`text`,ShortCode,");
-		sql.append("SUM((CHAR_LENGTH(`blanklessText`)-CHAR_LENGTH(REPLACE(`blanklessText`,?,'')))) AS cnt",tag);
+		sql.append("SELECT originUri,`text`,shortCode,");
+		sql.append("SUM((CHAR_LENGTH(`blanklessText`)-CHAR_LENGTH(REPLACE(`blanklessText`,?,'')))) as extra__cnt",tag);
 		sql.append("FROM shorturi  GROUP BY id" );
-		sql.append("HAVING cnt>0 ORDER BY cnt DESC");
+		sql.append("HAVING extra__cnt>0 ORDER BY extra__cnt DESC");
 	
 		
 		
@@ -88,7 +90,15 @@ public class ArticleRepository{
 	}
 	
 
+	public String getOrigin(String ShortCode) {
+		SecSql sql = new SecSql();
+		sql.append("select originUri from shortUri");
+		sql.append("where ShortCode=?",ShortCode);
 
+		
+		
+		return MysqlUtil.selectRowStringValue(sql);
+	}
 
 
 
