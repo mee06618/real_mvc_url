@@ -39,8 +39,11 @@ public class GoServlet extends DispatcherServlet {
 		
 		if(rq.getActionMethodName()=="doAdd") {
 			String originUri = req.getParameter("originUri");
-			rq.setParam1(originUri);
+			
+
 		String shortCode="";
+		if(originUri==null)
+			originUri=rq.getParam();
 		ArticleService service = new ArticleService();
 		if(service.getText(originUri)=="") {
 			
@@ -80,13 +83,14 @@ public class GoServlet extends DispatcherServlet {
 			String tag = req.getParameter("tag");
 		
 			ArticleService service = new ArticleService();
+			if(service.getSiteList(tag)!=null) {
 			List<Site> list = service.getSiteList(tag);
 			for(Site temp : list) {
 				System.out.println(temp.getText());
 			}
 			HttpSession session = req.getSession();
 			session.setAttribute("list",list);
-			
+			}
 		
 			resp.sendRedirect("/search/searchKeyword.jsp?tag="+tag);
 		}

@@ -23,7 +23,7 @@ public class Container {
 
 	
 	public static KeywordRepository keywordRepository;
-	public static KeywordService keyService;
+	public static KeywordService keywordService;
 	public static KeywordController keywordController;
 	
 	public static void init() {
@@ -40,7 +40,7 @@ public class Container {
 		usrArticleController = new UsrArticleController();
 		
 		keywordRepository = new KeywordRepository();
-		keyService = new KeywordService();
+		keywordService = new KeywordService();
 		keywordController = new KeywordController();
 		
 	}

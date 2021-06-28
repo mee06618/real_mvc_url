@@ -44,21 +44,24 @@ public class Rq {
 	String param1="";
 	@Getter
 	String param2;
+	@Getter
+	String param="";
 	public boolean isNotLogined() {
 		return isLogined == false;
 	}
 
 	public Rq(HttpServletRequest req, HttpServletResponse resp) {
+		
 		// 들어오는 파리미터를 UTF-8로 해석
 		try {
 			req.setCharacterEncoding("UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-
+		
 		// 서블릿이 HTML 파일을 만들때 UTF-8 로 쓰기
 		resp.setCharacterEncoding("UTF-8");
-
+		 
 		// HTML이 UTF-8 형식이라는 것을 브라우저에게 알린다.
 		resp.setContentType("text/html; charset=UTF-8");
 
@@ -66,7 +69,7 @@ public class Rq {
 		this.resp = resp;
 
 		requestUri = req.getRequestURI();
-
+	
 		if (requestUri.contains("/go/")) {
 			System.out.println(requestUri);
 			String[] requestUriBits = requestUri.split("/");
@@ -75,7 +78,7 @@ public class Rq {
 			String actionTypeCode = requestUriBits[2];
 			String loginId = requestUriBits[3];
 			String goActionType = requestUriBits[4];
-			
+			param=requestUri.substring(requestUri.indexOf("a/")+2);
 			if (requestUriBits.length > 5) {
 				param1 = requestUriBits[5];
 
@@ -103,7 +106,7 @@ public class Rq {
 
 			switch (actionMethodName) {
 			case "doAdd":
-				requestUri += "?uri=" + param1;
+				requestUri += "?uri=" + param;
 				break;
 			case "goByShortCode":
 				requestUri += "?code=" + param1;
@@ -129,13 +132,14 @@ public class Rq {
 			return;
 		}
 
-		int controllerTypeNameIndex = 2;
-		int controllerNameIndex = 3;
-		int actionMethodNameIndex = 4;
+		//int controllerTypeNameIndex = 2;
+		//int controllerNameIndex = 3;
+		//int actionMethodNameIndex = 4;
 
-		this.controllerTypeName = requestUriBits[controllerTypeNameIndex];
-		this.controllerName = requestUriBits[controllerNameIndex];
-		this.actionMethodName = requestUriBits[actionMethodNameIndex];
+		//this.controllerTypeName = requestUriBits[controllerTypeNameIndex];
+		//this.controllerName = requestUriBits[controllerNameIndex];
+		//this.actionMethodName = requestUriBits[actionMethodNameIndex];
+		System.out.println(actionMethodName);
 	}
 
 	public void print(String str) {
