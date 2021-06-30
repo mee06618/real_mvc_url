@@ -77,13 +77,20 @@ public class ArticleRepository{
 		return MysqlUtil.selectRow(sql,Site.class);
 	}
 
-	public List<Site> GetSiteList(String tag) {
+	public List<Site> GetSiteList(String tag, int listNum) {
 		SecSql sql = new SecSql();
+		if(listNum==0) {
 		sql.append("SELECT originUri,`text`,shortCode,");
 		sql.append("SUM((CHAR_LENGTH(`blanklessText`)-CHAR_LENGTH(REPLACE(`blanklessText`,?,'')))) as extra__cnt",tag);
 		sql.append("FROM shorturi  GROUP BY id" );
 		sql.append("HAVING extra__cnt>0 ORDER BY extra__cnt DESC");
-	
+		}
+		else {
+			sql.append("SELECT originUri,`text`,shortCode,");
+			sql.append("SUM((CHAR_LENGTH(`blanklessText`)-CHAR_LENGTH(REPLACE(`blanklessText`,?,'')))) as extra__cnt",tag);
+			sql.append("FROM shorturi  GROUP BY id" );
+			sql.append("HAVING extra__cnt>0 ORDER BY extra__cnt DESC LIMIT ?, ?", listNum-1,1);
+		}
 		
 		
 		return MysqlUtil.selectRows(sql,Site.class);
@@ -98,6 +105,13 @@ public class ArticleRepository{
 		
 		
 		return MysqlUtil.selectRowStringValue(sql);
+	}
+	public List<Site> GetSiteLists() {
+		SecSql sql = new SecSql();
+		sql.append("SELECT originUri,`text`,shortCode");
+		sql.append("FROM shorturi ORDER BY regDate" );
+		
+		return  MysqlUtil.selectRows(sql,Site.class);
 	}
 
 

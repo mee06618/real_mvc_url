@@ -188,7 +188,8 @@ public class MysqlUtil {
 
 	public static String selectRowStringValue(SecSql sql) {
 		Map<String, Object> row = selectRow(sql);
-
+		if(row==null)
+			return null;
 		for (String key : row.keySet()) {
 			return (String) row.get(key);
 		}

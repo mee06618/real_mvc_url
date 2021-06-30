@@ -50,5 +50,11 @@ header {
             </form>
         </div>
     </header>
+     	 <form action="usr/login"method="GET">
+            	<input type="text" name="id"></input>
+            	<input type="text" name="password"></input>
+            	<input type="submit" value="로그인"></input>
+            </form>
+    
 </body>
 </html>

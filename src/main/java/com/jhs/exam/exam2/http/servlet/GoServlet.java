@@ -1,6 +1,7 @@
 package com.jhs.exam.exam2.http.servlet;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -19,15 +20,21 @@ import com.jhs.exam.exam2.service.ArticleService;
 import com.jhs.exam.exam2.service.KeywordService;
 import com.jhs.exam.exam2.util.Ut;
 import com.jhs.mysqliutil.MysqlUtil;
+
+
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
 import kr.co.shineware.nlp.komoran.model.KomoranResult;
 import kr.co.shineware.nlp.komoran.model.Token;
 
+import java.io.UnsupportedEncodingException; 
+import java.net.URLDecoder; 
+import java.net.URLEncoder;
 
 @WebServlet("/go/*")
 public class GoServlet extends DispatcherServlet {
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException,UnsupportedEncodingException
+{
 		Rq rq = new Rq(req, resp);
 		  req.setCharacterEncoding("UTF-8");
 	        resp.setContentType("text/html; charset=UTF-8");
@@ -39,7 +46,7 @@ public class GoServlet extends DispatcherServlet {
 		
 		if(rq.getActionMethodName()=="doAdd") {
 			String originUri = req.getParameter("originUri");
-			
+			System.out.println(rq.getActionPath());
 
 		String shortCode="";
 		if(originUri==null)
@@ -80,11 +87,17 @@ public class GoServlet extends DispatcherServlet {
 		}
 		}	
 		else if(rq.getActionMethodName()=="goByText") {
-			String tag = req.getParameter("tag");
-		
+			
+			String tag = rq.getParam1();
+			
+			tag=URLDecoder.decode(tag, "utf-8");
+
 			ArticleService service = new ArticleService();
-			if(service.getSiteList(tag)!=null) {
-			List<Site> list = service.getSiteList(tag);
+			
+			
+			if(service.getSiteList(tag,0)!=null) {
+				int listNum=rq.getListNum();
+			List<Site> list = service.getSiteList(tag,listNum);
 			for(Site temp : list) {
 				System.out.println(temp.getText());
 			}
@@ -97,13 +110,22 @@ public class GoServlet extends DispatcherServlet {
 		else if(rq.getActionMethodName()=="goByShortCode"){
 			ArticleService service = new ArticleService();
 			String shortCode = rq.getParam1();
-			if(service.getOrigin(shortCode)!="")
+			if(service.getOrigin(shortCode)!=null)
 				
 			resp.sendRedirect(service.getOrigin(shortCode));
 			else {
 				resp.sendRedirect("/search");
 			}
 		}
+		else if(rq.getActionMethodName()=="goList"){
+
+			ArticleService service = new ArticleService();
+			HttpSession session = req.getSession();
+			List<Site> list = service.getSiteList("",0);
+			session.setAttribute("list",list);
+			resp.sendRedirect("/search/searchKeyword.jsp");
+		}
+		
 		
 	}
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

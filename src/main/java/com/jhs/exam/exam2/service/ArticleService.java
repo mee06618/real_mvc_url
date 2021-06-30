@@ -61,9 +61,11 @@ public class ArticleService {
 	}
 
 
-	public List<Site> getSiteList(String tag) {
+	public List<Site> getSiteList(String tag, int listNum) {
 		// TODO Auto-generated method stub
-		return articleRepository.GetSiteList(tag);
+		if(tag=="")
+			return articleRepository.GetSiteLists();
+		return articleRepository.GetSiteList(tag,listNum);
 	}
 
 }

@@ -8,7 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
+import com.jhs.exam.exam2.dto.Member;
 import com.jhs.exam.exam2.util.Ut;
 
 import lombok.Getter;
@@ -29,13 +29,7 @@ public class Rq {
 	private String actionMethodName;
 
 	@Getter
-	@Setter
-	private boolean isLogined = false;
-
-	@Getter
-	@Setter
-	private int loginedMemberId = 0;
-
+	private int listNum;
 
 	@Getter
 	private String requestUri;
@@ -46,10 +40,21 @@ public class Rq {
 	String param2;
 	@Getter
 	String param="";
+	@Getter
+	@Setter
+	private boolean isLogined = false;
+	
+	@Getter
+	@Setter
+	private int loginedMemberId = 0;
+	
+	@Getter
+	@Setter
+	private Member loginedMember = null;
+	
 	public boolean isNotLogined() {
 		return isLogined == false;
 	}
-
 	public Rq(HttpServletRequest req, HttpServletResponse resp) {
 		
 		// 들어오는 파리미터를 UTF-8로 해석
@@ -71,6 +76,7 @@ public class Rq {
 		requestUri = req.getRequestURI();
 	
 		if (requestUri.contains("/go/")) {
+			this.controllerTypeName = "shortUri";
 			System.out.println(requestUri);
 			String[] requestUriBits = requestUri.split("/");
 
@@ -90,7 +96,12 @@ public class Rq {
 				param2 = requestUriBits[6];
 			}
 		
+			if(goActionType.length()>=2) {
+				listNum =Integer.parseInt(goActionType.replaceAll("[^0-9]", ""));
+				goActionType=goActionType.replaceAll("[0-9]", "");;
+			}
 			switch (goActionType) {
+			
 			case "a":
 				actionMethodName = "doAdd";
 				break;
@@ -100,8 +111,12 @@ public class Rq {
 			case "t":
 				actionMethodName = "goByText";
 				break;
-			}
 			
+			case "l":
+			actionMethodName = "goList";
+			break;
+			}
+		}
 			requestUri = Ut.f("/usr/shortUri/%s", actionMethodName);
 
 			switch (actionMethodName) {
@@ -118,10 +133,16 @@ public class Rq {
 					requestUri += "?code=" + param1 +"&" + param2;
 				}
 				break;
+			case "goList":
+				if(param1!=null)
+				requestUri += "?code=" + param1;
+				
+					
+				break;	
 			}
 			print(Ut.f("%s", requestUri));
 			System.out.println(requestUri);
-		}
+		
 
 		String[] requestUriBits = requestUri.split("/");
 
@@ -132,13 +153,13 @@ public class Rq {
 			return;
 		}
 
-		//int controllerTypeNameIndex = 2;
-		//int controllerNameIndex = 3;
+		
+		int controllerNameIndex = 3;
 		//int actionMethodNameIndex = 4;
 
-		//this.controllerTypeName = requestUriBits[controllerTypeNameIndex];
-		//this.controllerName = requestUriBits[controllerNameIndex];
-		//this.actionMethodName = requestUriBits[actionMethodNameIndex];
+		
+		this.controllerName = requestUriBits[controllerNameIndex];
+		
 		System.out.println(actionMethodName);
 	}
 
@@ -234,6 +255,8 @@ public class Rq {
 	}
 
 	public String getActionPath() {
-		return "/" + controllerTypeName + "/" + controllerName + "/" + actionMethodName;
+		return "/" + controllerTypeName + "/" + actionMethodName;
 	}
+
+
 }
